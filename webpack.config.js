@@ -3,20 +3,19 @@ var webpack = require('webpack');
 var prod = process.argv.indexOf('-p') >= 0;
 
 module.exports = {
-    entry: './src/index_webpack.mjs',
+    entry: './src/index_webpack.js',
     output: {
         path: __dirname,
         filename: 'dist/msa.js'
     },
     module: {
-        rules: [
-            {   test: /(\.js)|(\.mjs)$/,
+        loaders: [
+            {   test: /\.js?$/,
                 loader: 'babel-loader'
             },
             { test: /\.css$/,
-                loader: "style-loader!css-loader" 
-            }
-        ]
+                loader: "style-loader!css-loader" }
+        ],
     },
     devtool: 'source-map',
     plugins: [
@@ -26,27 +25,26 @@ module.exports = {
     ],
     // require other ES6 files (experimental)
     resolve: {
-      modules: [
-        "node_modules",
-        path.resolve(__dirname),
-      ],
+      root: path.resolve(__dirname),
       alias: {
         "bio.io": 'node_modules/bio.io/src/index'
       }
     },
 };
-
 var w = module.exports;
 
 // only executed with -p
-if (prod) {
+if(prod) {
     w.plugins.push(
         new webpack.optimize.UglifyJsPlugin({
             compress: {
-                collapse_vars: true,
-                drop_console: true
+                collapse_vars: true
             },
-            sourceMap: true
-        })
+        sourceMap: true
+    }));
+    var WebpackStrip = require('strip-loader');
+    w.module.loaders.push(
+        {   test: path.join(__dirname, 'src'),
+         loader: WebpackStrip.loader('console.log') }
     );
 }

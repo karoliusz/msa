@@ -1,4 +1,4 @@
-import MSA from "./msa.mjs";
+import MSA from "./msa";
 
 const MSAWrapper = function() {
   var msa = function(args) {
